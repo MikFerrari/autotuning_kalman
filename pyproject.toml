@@ -1,0 +1,47 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "autotuning_kalman"
+version = "0.1.0"
+description = "Controller calibration by Kalman filtering (Menner, Berntorp, Di Cairano, IEEE TCST 2023)"
+requires-python = ">=3.10"
+dependencies = ["numpy", "scipy", "plotly"]  # torch and kaleido come from conda (pixi envs)
+
+[tool.pixi.workspace]
+name = "autotuning_kalman"
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+[tool.pixi.dependencies]
+python = "3.12.*"
+numpy = "*"
+scipy = "*"
+plotly = ">=6"
+python-kaleido = ">=1"
+pytest = "*"
+
+[tool.pixi.feature.cpu.dependencies]
+pytorch-cpu = "*"
+
+[tool.pixi.feature.cuda.system-requirements]
+cuda = "12.8"
+
+[tool.pixi.feature.cuda.dependencies]
+pytorch-gpu = "*"
+cuda-version = ">=12.8"
+
+[tool.pixi.environments]
+default = ["cpu"]
+cuda = ["cuda"]
+
+[tool.pixi.pypi-dependencies]
+autotuning_kalman = { path = ".", editable = true }
+
+[tool.pixi.tasks]
+test = "pytest -q tests"
+di-episodic = "python experiments/di_episodic.py --c-theta 0.1"
+di-online = "python experiments/di_online.py"
+vehicle-compare = "python experiments/vehicle_compare.py"
+lane-change = "python experiments/lane_change_online.py"
